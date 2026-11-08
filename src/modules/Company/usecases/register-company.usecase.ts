@@ -44,7 +44,7 @@ export class RegisterCompanyUseCase {
 
     await this.companiesRepository.save(company);
 
-    // 🌟 CORREÇÃO DO ERRO: Retorna o objeto completo cumprindo o contrato do RegisterCompanyOutputDTO
+    
     return {
       id: company.id,
       companyName: company.companyName,

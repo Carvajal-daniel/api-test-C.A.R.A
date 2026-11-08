@@ -13,8 +13,11 @@ export class RegisterCompanyController {
 
    
           const result = await this.registerUseCase.execute(validatedData);
+
           return reply.status(201).send(result); 
+
     } catch (error) {
+      
       console.error("ERRO DETALHADO AQUI:", error) 
 
     return reply
