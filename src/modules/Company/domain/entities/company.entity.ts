@@ -1,5 +1,5 @@
 
-import type { ComapnyEmail } from '../value-objects/email.vo.js';
+import type { CompanyEmail } from '../value-objects/email.vo.js';
 import type { Password } from '../value-objects/password.vo.js';
 
 
@@ -8,7 +8,7 @@ export interface CompanyProps {
   companyName: string;
   name: string;
   phone: string;
-  email: ComapnyEmail;      
+  email: CompanyEmail;      
   password: Password;
   isActive: boolean;
   createdAt: Date;

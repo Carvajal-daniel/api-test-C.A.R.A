@@ -1,7 +1,7 @@
 // src/modules/Company/usecases/register-company.usecase.ts
 import { CompanyEntity, type CompanyProps } from '../domain/entities/company.entity.js';
 import type { CompaniesRepository } from '../domain/repository/companies.repository.interface.js';
-import { ComapnyEmail } from '../domain/value-objects/email.vo.js';
+import { CompanyEmail } from '../domain/value-objects/email.vo.js';
 import { Password } from '../domain/value-objects/password.vo.js';
 import type { RegisterCompanyInputDTO, RegisterCompanyOutputDTO } from './company-dto.js';
 import * as crypto from 'crypto';
@@ -18,7 +18,7 @@ export class RegisterCompanyUseCase {
 
   async execute(data: RegisterCompanyInputDTO): Promise<RegisterCompanyOutputDTO> {
     // 1. Instancia os Value Objects passando o dado que já veio limpo pelo Zod universal
-    const emailVO = ComapnyEmail.create(data.email);
+    const emailVO = CompanyEmail.create(data.email);
     const passwordVO = Password.create(data.password);
 
     // 2. Monta as propriedades da entidade direto, sem repetição de código
@@ -37,7 +37,7 @@ export class RegisterCompanyUseCase {
     const company = CompanyEntity.create(companyProps);
 
     // 3. Regra de negócio: Checa se o e-mail já existe
-    const emailExists = await this.companiesRepository.existsByEmail(company.email);
+    const emailExists = await this.companiesRepository.existsByEmail(emailVO);
     if (emailExists) {
       throw new CompanyEmailAlreadyInUseError();
     }

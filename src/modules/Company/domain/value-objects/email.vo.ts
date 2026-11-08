@@ -3,7 +3,7 @@ import { InvalidEmailError } from "../errors/Invalid-email.js";
 
 
 
-export class ComapnyEmail {
+export class CompanyEmail {
   private readonly _value: string
 
   private constructor(value: string){
@@ -11,15 +11,14 @@ export class ComapnyEmail {
     Object.freeze(this)
   }
 
-  static create(email: string): ComapnyEmail{
+  static create(email: string): CompanyEmail{
 
-    const emailClean = email.trim().toLocaleLowerCase();
+    const emailClean = email.trim().toLowerCase();
 
     if(!emailClean || !this.validate(emailClean) ){
       throw new InvalidEmailError()
     }
-    
-    return new ComapnyEmail(email)
+    return new CompanyEmail(emailClean)
   }
 
   private static validate(email:string){
