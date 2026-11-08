@@ -1,11 +1,10 @@
-// src/modules/Company/Application/use-case/company-use-case.ts
-import type { RegisterCompanyInput } from '../../../shared/utils/validation-schemas.js';
+// src/modules/Company/usecases/register-company.usecase.ts
 import { CompanyEntity, type CompanyProps } from '../domain/entities/company.entity.js';
 import type { CompaniesRepository } from '../domain/repository/companies.repository.interface.js';
 import { ComapnyEmail } from '../domain/value-objects/email.vo.js';
 import { Password } from '../domain/value-objects/password.vo.js';
-
-
+import type { RegisterCompanyInputDTO, RegisterCompanyOutputDTO } from './company-dto.js';
+import * as crypto from 'crypto';
 
 export class CompanyEmailAlreadyInUseError extends Error {
   constructor() {
@@ -17,7 +16,7 @@ export class CompanyEmailAlreadyInUseError extends Error {
 export class RegisterCompanyUseCase {
   constructor(private readonly companiesRepository: CompaniesRepository) {}
 
-  async execute(data: RegisterCompanyInput): Promise<{ id: string }> {
+  async execute(data: RegisterCompanyInputDTO): Promise<RegisterCompanyOutputDTO> {
     // 1. Instancia os Value Objects passando o dado que já veio limpo pelo Zod universal
     const emailVO = ComapnyEmail.create(data.email);
     const passwordVO = Password.create(data.password);
@@ -45,6 +44,11 @@ export class RegisterCompanyUseCase {
 
     await this.companiesRepository.save(company);
 
-    return { id: company.id };
+    // 🌟 CORREÇÃO DO ERRO: Retorna o objeto completo cumprindo o contrato do RegisterCompanyOutputDTO
+    return {
+      id: company.id,
+      companyName: company.companyName,
+      email: company.email
+    };
   }
 }

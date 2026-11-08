@@ -18,6 +18,7 @@ export class ComapnyEmail {
     if(!emailClean || !this.validate(emailClean) ){
       throw new InvalidEmailError()
     }
+    
     return new ComapnyEmail(email)
   }
 

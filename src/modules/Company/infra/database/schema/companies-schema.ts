@@ -14,7 +14,7 @@ export const CompanyTable = pgTable("companies", {
   phone: text("phone").notNull(),
   
   // E-mail Para Acesso*
-  email: text("email").notNull(),
+  email: text("email").notNull().unique(),
   
   // Senha (Mínimo de 6 e máximo de 15 caracteres)* -> Salvaremos o Hash
   password: text("password").notNull(),

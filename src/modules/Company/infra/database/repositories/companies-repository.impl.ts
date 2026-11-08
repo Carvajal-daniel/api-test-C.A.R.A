@@ -1,10 +1,12 @@
-// src/modules/Company/Infrastructure/database/repositories/company-repository-db.ts
+
 import { eq } from "drizzle-orm";
 import { db } from "../../../../../shared/database/database.js";
-import type { CompanyEntity } from "../../../domain/entities/company.entity.js";
-import { CompanyTable } from "../schema/companies-schema.js";
 
-export class CompanyRepositoryDB implements CompanyRepositoryDB {
+import { CompanyTable } from "../schema/companies-schema.js";
+import type { CompanyEntity } from "../../../domain/entities/company.entity.js";
+import type { CompaniesRepository } from "../../../domain/repository/companies.repository.interface.js";
+
+export class CompanyRepositoryDB implements CompaniesRepository {
   
   async save(company: CompanyEntity): Promise<void> {
     await db

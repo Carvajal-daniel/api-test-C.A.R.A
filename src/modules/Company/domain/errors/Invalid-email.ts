@@ -1,9 +1,8 @@
-import { AppError } from "../../../../shared/Errors/app-errors.js";
 
 
-
-export class InvalidEmailError extends AppError{
-  constructor(){
-    super("Invalid email", 409)
+export class InvalidEmailError extends Error {
+  constructor() {
+    super("Formato de e-mail inválido.");
+    this.name = "InvalidEmailError";
   }
 }
