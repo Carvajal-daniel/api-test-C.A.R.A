@@ -26,6 +26,26 @@ export class ContractRepositoryImpl implements ContractsRepository {
       return null;
     }
 
+    // 1. Busca todas as transações atreladas a este contrato específico no banco
+    const dbTransactions = await db
+      .select()
+      .from(transactions)
+      .where(eq(transactions.contractId, id));
+
+    // 2. Converte os registros do banco para entidades TransactionEntity do domínio
+    const mappedTransactions = dbTransactions.map((tx) =>
+      TransactionEntity.create({
+        id: tx.id,
+        contractId: tx.contractId,
+        amount: Amount.create(tx.amount),
+        description: tx.description,
+        date: tx.date,
+        createdAt: tx.createdAt,
+        updatedAt: tx.updatedAt,
+      })
+    );
+
+    // 3. Retorna a entidade removendo 'endDate' (gerado no domínio) e injetando as transações
     return ContractEntity.create({
       id: contract.id,
       name: contract.name,
@@ -33,21 +53,43 @@ export class ContractRepositoryImpl implements ContractsRepository {
       startDate: contract.startDate,
       createdAt: contract.createdAt,
       updatedAt: contract.updatedAt,
-    });
+      transactions: mappedTransactions,
+    } as any);
   }
 
   async findAll(): Promise<ContractEntity[]> {
     const rows = await db.select().from(contracts);
     
-    return rows.map((contract) =>
-      ContractEntity.create({
-        id: contract.id,
-        name: contract.name,
-        totalAmount: Amount.create(contract.totalAmount),
-        startDate: contract.startDate,
-        createdAt: contract.createdAt,
-        updatedAt: contract.updatedAt,
-      }),
+    // Mapeia em paralelo todos os contratos injetando suas respectivas listas de lançamentos
+    return Promise.all(
+      rows.map(async (contract) => {
+        const dbTransactions = await db
+          .select()
+          .from(transactions)
+          .where(eq(transactions.contractId, contract.id));
+
+        const mappedTransactions = dbTransactions.map((tx) =>
+          TransactionEntity.create({
+            id: tx.id,
+            contractId: tx.contractId,
+            amount: Amount.create(tx.amount),
+            description: tx.description,
+            date: tx.date,
+            createdAt: tx.createdAt,
+            updatedAt: tx.updatedAt,
+          })
+        );
+
+        return ContractEntity.create({
+          id: contract.id,
+          name: contract.name,
+          totalAmount: Amount.create(contract.totalAmount),
+          startDate: contract.startDate,
+          createdAt: contract.createdAt,
+          updatedAt: contract.updatedAt,
+          transactions: mappedTransactions,
+        } as any);
+      })
     );
   }
 }
