@@ -9,6 +9,14 @@ export interface ContractDashboard {
   availableBalance: number;
   nearLimit: boolean;
   underutilized: boolean;
+  startDate: string | null; // Adicionado
+  endDate: string | null;   // Adicionado
+  transactions: Array<{     // Adicionado
+    id: string;
+    description: string;
+    amount: number;
+    date: string | null;
+  }>;
 }
 
 export class GetDashboardUseCase {
@@ -28,12 +36,20 @@ export class GetDashboardUseCase {
 
         const consumptionPercentage = (totalLaunched / contract.totalAmount) * 100;
 
-        const contractDuration = contract.endDate.getTime() - contract.startDate.getTime();
+        const contractDuration = contract.endDate ? contract.endDate.getTime() - contract.startDate.getTime() : 0;
 
         const elapsedPercentage =
           contractDuration > 0
             ? ((now.getTime() - contract.startDate.getTime()) / contractDuration) * 100
             : 0;
+
+        // Formata as transações que o repositório já trouxe do banco atreladas a este contrato
+        const mappedTransactions = (contract as any).transactions?.map((tx: any) => ({
+          id: tx.id,
+          description: tx.description,
+          amount: Number(tx.amount),
+          date: tx.date ? new Date(tx.date).toISOString() : null,
+        })) || [];
 
         return {
           contractId: contract.id,
@@ -43,6 +59,9 @@ export class GetDashboardUseCase {
           availableBalance: contract.totalAmount - totalLaunched,
           nearLimit: consumptionPercentage >= 80,
           underutilized: consumptionPercentage < 20 && elapsedPercentage > 50,
+          startDate: contract.startDate ? new Date(contract.startDate).toISOString() : null, // Mapeado
+          endDate: contract.endDate ? new Date(contract.endDate).toISOString() : null,     // Mapeado
+          transactions: mappedTransactions,                                                 // Mapeado
         };
       }),
     );
