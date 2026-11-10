@@ -26,13 +26,13 @@ export class ContractRepositoryImpl implements ContractsRepository {
       return null;
     }
 
-    // 1. Busca todas as transações atreladas a este contrato específico no banco
+    
     const dbTransactions = await db
       .select()
       .from(transactions)
       .where(eq(transactions.contractId, id));
 
-    // 2. Converte os registros do banco para entidades TransactionEntity do domínio
+    
     const mappedTransactions = dbTransactions.map((tx) =>
       TransactionEntity.create({
         id: tx.id,
@@ -45,7 +45,7 @@ export class ContractRepositoryImpl implements ContractsRepository {
       })
     );
 
-    // 3. Retorna a entidade removendo 'endDate' (gerado no domínio) e injetando as transações
+    
     return ContractEntity.create({
       id: contract.id,
       name: contract.name,
@@ -60,7 +60,7 @@ export class ContractRepositoryImpl implements ContractsRepository {
   async findAll(): Promise<ContractEntity[]> {
     const rows = await db.select().from(contracts);
     
-    // Mapeia em paralelo todos os contratos injetando suas respectivas listas de lançamentos
+    
     return Promise.all(
       rows.map(async (contract) => {
         const dbTransactions = await db
