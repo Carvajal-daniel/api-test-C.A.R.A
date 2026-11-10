@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/shared/http/server.ts"
+   "scripts": {
+    "test": "tsx --test src/modules/Contract/usecases/contract.spec.ts",
+    "dev": "tsx watch src/shared/http/server.ts",
+    "build": "tsc",
+    "start": "node dist/shared/http/server.js",
+    "db:seed": "tsx src/shared/database/seed.ts",
+    "db:migrate": "drizzle-kit migrate"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@fastify/cors": "^11.4.1",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
